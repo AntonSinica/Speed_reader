@@ -10,6 +10,7 @@ let currentWordIndex = 0;
 let intervalId = null;
 let isPaused = false;
 let speed = 300; // Скорость по умолчанию в миллисекундах
+let timeoutId = null;
 
 // Функция для отображения текущего слова
 function displayWord() {
@@ -17,15 +18,30 @@ function displayWord() {
     if (currentWordIndex < words.length) {
         wordDisplay.innerHTML = words[currentWordIndex];
         currentWordIndex++;
+        if (!isPaused) {
+            timeoutId = setTimeout(displayWord, speed);
+        }
     } else {
         // Конец списка слов
-        clearInterval(intervalId);
+        stopReading();
     }
+}
+
+// валидатор скорости
+function isValidSpeed(input) {
+    return /^\d+$/.test(input) && parseInt(input) >= 100 && parseInt(input) <= 3000;
 }
 
 // Обработчик события для изменения скорости
 speedInput.addEventListener('input', function() {
-    speed = parseInt(this.value) || 300;
+    const inputValue = this.value;
+    if (isValidSpeed(inputValue)) {
+        speed = parseInt(inputValue);
+    } else {
+        // Установить скорость по умолчанию или обработать некорректный ввод
+        speed = 300; // Скорость по умолчанию
+        // При необходимости отобразить сообщение об ошибке
+    }
 });
 
 // Обработчик события для выбора файла
@@ -54,10 +70,14 @@ fileInput.addEventListener('change', function(event) {
 
 // Функция для запуска чтения
 function startReading() {
-    // Получение скорости из поля ввода и преобразование в целое число
     speed = parseInt(speedInput.value) || 300;
-    // Запуск интервала
-    intervalId = setInterval(displayWord, speed);
+    if (isValidSpeed(speed)) {
+        currentWordIndex = 0;
+        isPaused = false;
+        displayWord();
+    } else {
+        alert('Пожалуйста, введите корректную скорость от 100 до 3000 миллисекунд.');
+    }
     // Обновление состояния кнопок
     document.getElementById('startButton').disabled = true;
     document.getElementById('pauseButton').disabled = false;
@@ -66,18 +86,26 @@ function startReading() {
 
 // Функция для приостановки чтения
 function pauseReading() {
-    // Очистка интервала
-    clearInterval(intervalId);
+    isPaused = true;
+    clearTimeout(timeoutId);
     // Обновление состояния кнопок
     document.getElementById('pauseButton').disabled = true;
     document.getElementById('startButton').disabled = false;
 }
 
+
+function resumeReading() {
+    isPaused = false;
+    displayWord();
+    // Обновление состояния кнопок
+    document.getElementById('pauseButton').disabled = false;
+    document.getElementById('startButton').disabled = true;
+}
+
 // Функция для остановки чтения
 function stopReading() {
-    // Очистка интервала
-    clearInterval(intervalId);
-    // Сброс переменных
+    isPaused = false;
+    clearTimeout(timeoutId);
     currentWordIndex = 0;
     document.getElementById('word').innerHTML = '';
     // Обновление состояния кнопок

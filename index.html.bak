@@ -1,19 +1,21 @@
 <!DOCTYPE html>
-<html>
+<html lang="ru">
 <head>
-    <title>Читалка для скорочтения</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Приложение для скорочтения</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
     <div id="container">
-        <div id="word"></div>
         <input type="file" id="fileInput">
-        <div id="controls">
+        <div id="word">Пример слова</div>
+        <div>
             <button id="startButton">Старт</button>
             <button id="pauseButton">Пауза</button>
             <button id="stopButton">Стоп</button>
         </div>
-        <input type="number" id="speedInput" value="300"> мс
+        <input type="number" id="speedInput" placeholder="Скорость (мс)">
     </div>
     <script src="script.js"></script>
 </body>
