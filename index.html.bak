@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Читалка для скорочтения</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div id="container">
+        <div id="word"></div>
+        <input type="file" id="fileInput">
+        <div id="controls">
+            <button id="startButton">Старт</button>
+            <button id="pauseButton">Пауза</button>
+            <button id="stopButton">Стоп</button>
+        </div>
+        <input type="number" id="speedInput" value="300"> мс
+    </div>
+    <script src="script.js"></script>
+</body>
+</html>

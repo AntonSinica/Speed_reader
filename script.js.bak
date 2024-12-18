@@ -1,0 +1,96 @@
+// script.js
+
+// Выбор элементов
+const fileInput = document.getElementById('fileInput');
+const speedInput = document.getElementById('speedInput');
+
+// Инициализация переменных
+let words = [];
+let currentWordIndex = 0;
+let intervalId = null;
+let isPaused = false;
+let speed = 300; // Скорость по умолчанию в миллисекундах
+
+// Функция для отображения текущего слова
+function displayWord() {
+    const wordDisplay = document.getElementById('word');
+    if (currentWordIndex < words.length) {
+        wordDisplay.innerHTML = words[currentWordIndex];
+        currentWordIndex++;
+    } else {
+        // Конец списка слов
+        clearInterval(intervalId);
+    }
+}
+
+// Обработчик события для изменения скорости
+speedInput.addEventListener('input', function() {
+    speed = parseInt(this.value) || 300;
+});
+
+// Обработчик события для выбора файла
+fileInput.addEventListener('change', function(event) {
+    const file = event.target.files[0];
+    if (file) {
+        if (file.type.startsWith('text/')) {
+            const reader = new FileReader();
+            reader.addEventListener('load', function() {
+                const text = reader.result;
+                words = text.split(/\s+/);
+                currentWordIndex = 0;
+                // Готовность к отображению слов в заданиях следующего дня
+                console.log('Массив слов:', words);
+            });
+            reader.readAsText(file);
+        } else {
+            alert('Пожалуйста, выберите текстовый файл.');
+        }
+    } else {
+        alert('Файл не выбран.');
+    }
+});
+
+// script.js (Продолжение из Дня 2)
+
+// Функция для запуска чтения
+function startReading() {
+    // Получение скорости из поля ввода и преобразование в целое число
+    speed = parseInt(speedInput.value) || 300;
+    // Запуск интервала
+    intervalId = setInterval(displayWord, speed);
+    // Обновление состояния кнопок
+    document.getElementById('startButton').disabled = true;
+    document.getElementById('pauseButton').disabled = false;
+    document.getElementById('stopButton').disabled = false;
+}
+
+// Функция для приостановки чтения
+function pauseReading() {
+    // Очистка интервала
+    clearInterval(intervalId);
+    // Обновление состояния кнопок
+    document.getElementById('pauseButton').disabled = true;
+    document.getElementById('startButton').disabled = false;
+}
+
+// Функция для остановки чтения
+function stopReading() {
+    // Очистка интервала
+    clearInterval(intervalId);
+    // Сброс переменных
+    currentWordIndex = 0;
+    document.getElementById('word').innerHTML = '';
+    // Обновление состояния кнопок
+    document.getElementById('stopButton').disabled = true;
+    document.getElementById('startButton').disabled = false;
+    document.getElementById('pauseButton').disabled = true;
+}
+
+// Добавление обработчиков событий для кнопок
+document.getElementById('startButton').addEventListener('click', startReading);
+document.getElementById('pauseButton').addEventListener('click', pauseReading);
+document.getElementById('stopButton').addEventListener('click', stopReading);
+
+// Инициализация состояния кнопок
+document.getElementById('pauseButton').disabled = true;
+document.getElementById('stopButton').disabled = true;
