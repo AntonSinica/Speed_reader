@@ -15,26 +15,26 @@ let timeoutId = null;
 // Функция для отображения текущего слова
 function displayWord() {
     const wordDisplay = document.getElementById('word');
-    if (currentWordIndex < words.length) {
+    if (currentWordIndex < words.length && speed !== null) {
         wordDisplay.innerHTML = words[currentWordIndex];
         currentWordIndex++;
         if (!isPaused) {
             timeoutId = setTimeout(displayWord, speed);
         }
     } else {
-        // Конец списка слов
+        // Конец списка слов или WPM = 0
         stopReading();
     }
 }
 
 // Валидация WPM: допустимый диапазон
 function isValidWPM(input) {
-    return /^\d+$/.test(input) && parseInt(input) >= 50 && parseInt(input) <= 1200;
+    return /^\d+$/.test(input) && parseInt(input) >= 1 && parseInt(input) <= 1200;
 }
 
 // Расчет задержки между словами на основе WPM
 function calculateDelay(wpm) {
-    return wpm > 0 ? 60000 / wpm : 0; // 60000 мс = 1 минута
+    return wpm > 0 ? 60000 / wpm : null; // Возвращаем null, если WPM = 0
 }
 
 // Обработчик события для изменения скорости
@@ -46,7 +46,7 @@ speedInput.addEventListener('input', function() {
     } else {
         // Установить WPM по умолчанию или обработать некорректный ввод
         speed = calculateDelay(300); // WPM по умолчанию — 300
-        alert('Пожалуйста, введите корректное значение WPM от 50 до 1200.');
+        alert('Пожалуйста, введите корректное значение WPM от 1 до 1200.');
     }
 });
 
@@ -94,19 +94,27 @@ fileInput.addEventListener('change', function(event) {
 
 // Функция для запуска чтения
 function startReading() {
-    const wpm = parseInt(speedInput.value) || 300;
+    const wpm = parseInt(speedInput.value) || 0; // По умолчанию WPM = 0
+    if (wpm === 0) {
+        alert('WPM не может быть 0. Пожалуйста, введите значение от 1 до 1200.');
+        return;
+    }
     if (isValidWPM(wpm)) {
         currentWordIndex = 0;
         isPaused = false;
         speed = calculateDelay(wpm);
-        displayWord();
+        if (speed !== null) {
+            displayWord();
+        } else {
+            stopReading();
+        }
     } else {
-        alert('Пожалуйста, введите корректное значение WPM от 50 до 1200.');
+        alert('Пожалуйста, введите корректное значение WPM от 1 до 1200.');
     }
     // Обновление состояния кнопок
     document.getElementById('startButton').disabled = true;
-    document.getElementById('pauseButton').disabled = false;
-    document.getElementById('stopButton').disabled = false;
+    document.getElementById('pauseButton').disabled = speed !== null;
+    document.getElementById('stopButton').disabled = speed === null;
 }
 
 // Функция для приостановки чтения

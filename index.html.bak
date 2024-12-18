@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Приложение для скорочтения</title>
     <link rel="stylesheet" href="style.css">
+	
 </head>
 <body>
     <div id="container">
@@ -15,7 +16,7 @@
             <button id="pauseButton">Пауза</button>
             <button id="stopButton">Стоп</button>
         </div>
-        <input type="number" id="speedInput" placeholder="Скорость (WPM)">
+        <input type="number" id="speedInput" placeholder="Скорость (WPM)" value="60">
         <label for="speedInput">Слов в минуту</label>
     </div>
     <script src="script.js"></script>
