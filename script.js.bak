@@ -54,17 +54,38 @@ speedInput.addEventListener('input', function() {
 fileInput.addEventListener('change', function(event) {
     const file = event.target.files[0];
     if (file) {
-        if (file.type.startsWith('text/')) {
+        if (file.type === 'text/plain') {
+            // Чтение текстовых файлов .txt
             const reader = new FileReader();
-            reader.addEventListener('load', function() {
-                const text = reader.result;
+            reader.onload = function(e) {
+                const text = e.target.result;
                 words = text.split(/\s+/);
                 currentWordIndex = 0;
                 console.log('Массив слов:', words);
-            });
+            };
             reader.readAsText(file);
+        } else if (file.type === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document') {
+            // Чтение файлов .docx
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const arrayBuffer = e.target.result;
+                mammoth.convertToHtml({arrayBuffer: arrayBuffer})
+                    .then(function(result) {
+                        var html = result.value; // Получаем HTML-код из .docx
+                        var parser = new DOMParser();
+                        var doc = parser.parseFromString(html, "text/html");
+                        var text = doc.body.textContent; // Извлекаем текст из HTML
+                        words = text.split(/\s+/); // Разделяем текст на слова
+                        currentWordIndex = 0;
+                        console.log('Массив слов:', words);
+                    })
+                    .catch(function(error) {
+                        console.error("Ошибка при конвертации .docx файла:", error);
+                    });
+            };
+            reader.readAsArrayBuffer(file);
         } else {
-            alert('Пожалуйста, выберите текстовый файл.');
+            alert('Пожалуйста, выберите текстовый или Word файл (.txt, .docx).');
         }
     } else {
         alert('Файл не выбран.');
